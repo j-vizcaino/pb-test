@@ -1,23 +1,20 @@
-PROTO := $(shell find . -type f -name '*.proto')
+.phony = protobuf
 
-.phony = protobuf reader writer
+all: build
 
-all: reader writer
+build: test/writer test/reader
 
-clean:
-	rm -f reader writer *.pb.bin
+test/writer: protobuf cmd/writer/*.go
+	go build -o test/writer ./cmd/writer
 
-writer: protobuf cmd/writer/*.go
-	go build -o writer ./cmd/writer
-
-reader: protobuf cmd/reader/*.go
-	go build -o reader ./cmd/reader
+test/reader: protobuf cmd/reader/*.go
+	go build -o test/reader ./cmd/reader
 
 protobuf:
 	protoc --go_out=. pb/*.proto
 	protoc --go_out=. pb/v1/*.proto
 	protoc --go_out=. pb/v2/*.proto
 
-test:
-	./writer
-	./reader *.pb.bin
+test: build
+	cd test && ./writer && ./reader *.pb.bin
+

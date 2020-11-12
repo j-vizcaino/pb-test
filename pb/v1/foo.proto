@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package pb.v1;
+
+option go_package="pb/v1";
+
+message Foo {
+  string message = 1;
+}

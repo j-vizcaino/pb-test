@@ -32,18 +32,20 @@ func printPayload(filename string) {
 	spew.Printf("%s\n%s\n%s\n%#+v\n", ruler, filename, ruler, m)
 	defer fmt.Println()
 
-	if m.Details == nil {
+	if len(m.UnitsByID) == 0 {
 		return
 	}
 
-	switch m.Details.TypeUrl {
-	case "type.googleapis.com/pb.v1.Bar":
-		spew.Dump(unmarshalDetails(m.Details.Value, &v1.Bar{}))
-	case "type.googleapis.com/pb.v1.Foo":
-		fallthrough
-	case "type.googleapis.com/pb.v2.Foo":
-		spew.Dump(unmarshalDetails(m.Details.Value, &v1.Foo{}))
-		spew.Dump(unmarshalDetails(m.Details.Value, &v2.Foo{}))
+	for _, unit := range m.UnitsByID {
+		switch unit.Details.TypeUrl {
+		case "type.googleapis.com/pb.v1.Bar":
+			spew.Dump(unmarshalDetails(unit.Details.Value, &v1.Bar{}))
+		case "type.googleapis.com/pb.v1.Foo":
+			fallthrough
+		case "type.googleapis.com/pb.v2.Foo":
+			spew.Dump(unmarshalDetails(unit.Details.Value, &v1.Foo{}))
+			spew.Dump(unmarshalDetails(unit.Details.Value, &v2.Foo{}))
+		}
 	}
 }
 
